@@ -6,7 +6,8 @@ import asyncio
 # --- Список изображений ---
 image_urls = [
     'https://www.planetware.com/wpimages/2020/02/france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg',
-    'https://img.freepik.com/free-photo/portrait-blue-eyed-guy-ponders-something-stands-thoughtful-pose-holds-chin-concentrated-into-distance-wears-casual-orange-jumper_273609-45003.jpg?semt=ais_hybrid&w=740&q=80'
+    'https://img.freepik.com/free-photo/portrait-blue-eyed-guy-ponders-something-stands-thoughtful-pose-holds-chin-concentrated-into-distance-wears-casual-orange-jumper_273609-45003.jpg?semt=ais_hybrid&w=740&q=80',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR7BJInEFu5z1e9itbPb6IPcGcO5mAVoFG5g&s',
 ]
 
 # --- Инициализация бота ---
@@ -20,6 +21,7 @@ user_image_index = {}  # сюда будем сохранять, какую ка
 @bot.message_handler(commands=["start"])
 async def start(message: types.Message):
     await bot.send_message(message.chat.id, "Hello! I'm your friendly bot. How can I assist you today?")
+    await bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAANvaRNXGomAMfb3EhnfLa4yNZJC95oAAhwAAw220hm0snpxGVuW0DYE')
 
 
 @bot.message_handler(commands=["help"])
