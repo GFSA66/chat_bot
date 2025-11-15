@@ -1,4 +1,6 @@
+from unittest.mock import call
 from config import TOKEN
+import keyboards
 from telebot import types
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
@@ -20,8 +22,8 @@ user_image_index = {}  # сюда будем сохранять, какую ка
 
 @bot.message_handler(commands=["start"])
 async def start(message: types.Message):
-    await bot.send_message(message.chat.id, "Hello! I'm your friendly bot. How can I assist you today?")
-    await bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAANvaRNXGomAMfb3EhnfLa4yNZJC95oAAhwAAw220hm0snpxGVuW0DYE')
+    await bot.send_message(message.chat.id, "Привет! Я твой дружелюбный бот. Чем я могу помочь тебе?", reply_markup=keyboards.questions)
+    await bot.send_sticker(message.chat.id, 'CAACAgIAAxkBAAOCaReegnPc1gxgCWP_6inB2A2hngMAAkUDAAK1cdoGk4gQHIncDRs2BA')
 
 
 @bot.message_handler(commands=["help"])
@@ -29,9 +31,9 @@ async def help(message: types.Message):
     help_text = (
         ''' 
 Here are the commands you can use:
-• /start — Start the bot
-• /help — Show this help message
-• /image — Send next image
+• /start — Запустить бота
+• /help — Показать сообщение помощи
+• /image — Отправить следующую картинку
 '''
     )
     await bot.send_message(message.chat.id, help_text)
@@ -58,20 +60,43 @@ async def query(message: types.Message):
         text = message.text.lower()
         storage[message.from_user.id] = text
 
-        if 'привет' in text:
-            return await bot.send_message(message.chat.id, 'Привет! Как я могу помочь?')
+        if '*секретка*' in text:
+            await bot.send_message(message.chat.id, 'Секрет!', reply_markup=keyboards.InLineQuestions)
+        elif 'привет' in text:
+            await bot.send_message(message.chat.id, 'Привет! Как я могу помочь?', reply_markup=keyboards.questions)
         elif 'как дела' in text:
-            return await bot.send_message(message.chat.id, 'У меня всё хорошо, спасибо! А у вас?')
+            return await bot.send_message(message.chat.id, 'У меня всё хорошо, спасибо! А у вас?', reply_markup=keyboards.questions)
         elif 'проверка' in text:
-            return await bot.send_message(message.chat.id, 'Проверка прошла успешно!')
+            return await bot.send_message(message.chat.id, 'Проверка прошла успешно!', reply_markup=keyboards.questions)
         elif 'хз' in text:
-            return await bot.send_message(message.chat.id, 'тут точно не знаю что ответить')
+            return await bot.send_message(message.chat.id, 'тут точно не знаю что ответить', reply_markup=keyboards.questions)
         else:
-            return await bot.send_message(message.chat.id, 'Я пока не понимаю это сообщение 😅')
-
+            return await bot.send_message(message.chat.id, 'Я пока не понимаю это сообщение 😅', reply_markup=keyboards.questions)
     except Exception as e:
         print(e)
         await bot.send_message(message.chat.id, f"Ошибка: {str(e)}")
+
+
+@bot.callback_query_handler(func=lambda call: True)
+async def callback_query(call: types.CallbackQuery):
+    try:
+        selected_option = call.data  # This is the text on the button (the same as in `question_list`)
+
+        # Do something with the selected option, for example:
+        if selected_option == '*Секретка*':
+            await bot.answer_callback_query(call.id, text="Вы выбрали Секретка!")
+            await bot.send_message(call.message.chat.id, "Тут секретное сообщение!😇")
+        elif selected_option == 'привет':
+            await bot.answer_callback_query(call.id, text="Вы выбрали Привет!")
+            await bot.send_message(call.message.chat.id, "Привет! Чем могу помочь?")
+        elif selected_option == 'как дела':
+            await bot.answer_callback_query(call.id, text="Вы выбрали Как дела!")
+            await bot.send_message(call.message.chat.id, "У меня все хорошо, спасибо!")
+        # Handle other options...
+
+    except Exception as e:
+        print(f"Error: {e}")
+
 
 
 @bot.message_handler(content_types=['sticker'])
