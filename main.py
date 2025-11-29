@@ -80,16 +80,14 @@ async def query(message: types.Message):
 @bot.callback_query_handler(func=lambda call: True)
 async def callback_query(call: types.CallbackQuery):
     try:
-        selected_option = call.data  # This is the text on the button (the same as in `question_list`)
-
         # Do something with the selected option, for example:
-        if selected_option == '*Секретка*':
+        if call.data == '*Секретка*':
             await bot.answer_callback_query(call.id, text="Вы выбрали Секретка!")
             await bot.send_message(call.message.chat.id, "Тут секретное сообщение!😇")
-        elif selected_option == 'привет':
+        elif call.data == 'привет':
             await bot.answer_callback_query(call.id, text="Вы выбрали Привет!")
             await bot.send_message(call.message.chat.id, "Привет! Чем могу помочь?")
-        elif selected_option == 'как дела':
+        elif call.data == 'как дела':
             await bot.answer_callback_query(call.id, text="Вы выбрали Как дела!")
             await bot.send_message(call.message.chat.id, "У меня все хорошо, спасибо!")
         # Handle other options...
